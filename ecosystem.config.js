@@ -9,7 +9,7 @@ module.exports = {
     env_production: {
       NODE_ENV: 'production',
       LOG_LEVEL: 'error',
-      PUBLIC_SERVER_URL: 'https://admin.tryion.shop',
+      PUBLIC_SERVER_URL: 'https://aqueous-ridge-73917.herokuapp.com',
       PARSE_SERVER_MOUNT: '/api',
       PARSE_VERIFY_USER_EMAILS: true,
       APP_NAME: 'IonShop',
@@ -32,9 +32,9 @@ module.exports = {
       MAX_REQUEST_SIZE: '20mb',
       DOKKU_LETSENCRYPT_EMAIL: 'dev@quanlabs.com',
       PARSE_DASHBOARD_USER: 'admin',
-      PARSE_DASHBOARD_PASS: 'YOUR_ENCRYPTED_PASSWORD',
+      PARSE_DASHBOARD_PASS: '$2a$12$GkyhhSEU8szuhZTW9VvsfOX.9A5ud.xQ4CeC75RC2EjVrfNV.w6d6',
       PARSE_DASHBOARD_USER_READ_ONLY: 'admin1',
-      PARSE_DASHBOARD_PASS_READ_ONLY: 'YOUR_ENCRYPTED_PASSWORD'
+      PARSE_DASHBOARD_PASS_READ_ONLY: '$2a$12$GkyhhSEU8szuhZTW9VvsfOX.9A5ud.xQ4CeC75RC2EjVrfNV.w6d6'
     }
   }, {
     name: 'worker',
@@ -47,7 +47,7 @@ module.exports = {
       NODE_ENV: 'production',
       APP_ID: 'JrWy7sUKLL',
       MASTER_KEY: 'YOUR_MASTER_KEY',
-      PUBLIC_SERVER_URL: 'https://admin.tryion.shop',
+      PUBLIC_SERVER_URL: 'https://aqueous-ridge-73917.herokuapp.com',
       PARSE_SERVER_MOUNT: '/api',
     }
   }]
