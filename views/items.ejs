@@ -1,0 +1,94 @@
+<md-content class="main-content" ng-controller="ItemCtrl">
+  <md-table-toolbar>
+    <div layout="row" layout-xs="column" layout-padding layout-align-gt-sm="start center">
+      <md-input-container class="md-block no-margin" md-no-float flex="100" flex-gt-sm="25">
+        <input type="text" translate-cloak="SEARCH" translate-attr="{ placeholder: 'SEARCH' }" ng-model="query.canonical"
+          ng-keypress="$event.keyCode === 13 && onReload()" />
+      </md-input-container>
+      <span flex></span>
+      <div>
+        <md-button class="md-primary md-raised no-margin" md-colors="::{ color: 'white' }" aria-label="New"
+          ng-click="onEdit($event)" translate="CREATE" translate-cloak="CREATE">
+        </md-button>
+      </div>
+    </div>
+  </md-table-toolbar>
+  <md-table-container>
+    <table md-table md-progress="promise">
+      <thead md-head md-on-reorder="onReorder">
+        <tr md-row>
+          <th class="text-center text-uppercase bold" md-column md-order-by="name">
+            <md-icon></md-icon>
+            <span translate="ITEM" translate-cloak="ITEM"></span>
+          </th>
+          <th class="text-center text-uppercase bold" md-column md-order-by="netPrice">
+            <md-icon></md-icon>
+            <span translate="PRICE" translate-cloak="PRICE"></span>
+          </th>
+          <th class="text-center text-uppercase bold" md-column md-order-by="ratingAvg">
+            <md-icon></md-icon>
+            <span translate="RATING" translate-cloak="RATING"></span>
+          </th>
+          <th class="text-center text-uppercase bold" md-column md-order-by="views">
+            <md-icon></md-icon>
+            <span translate="VIEWS" translate-cloak="VIEWS"></span>
+          </th>
+          <th class="text-center text-uppercase bold" md-column>
+            <span translate="STATUS" translate-cloak="STATUS"></span>
+          </th>
+          <th md-column></th>
+        </tr>
+      </thead>
+      <tbody md-body>
+        <tr md-row ng-repeat="item in items">
+          <td md-cell class="text-center">
+            {{:: item.name }}
+          </td>
+          <td md-cell class="text-center">
+            <span ng-if="item.salePrice">
+              <s>{{:: item.price | currency: currencySymbol }}</s><br/>
+              {{:: item.salePrice | currency: currencySymbol }}
+            </span>
+            <span ng-if="!item.salePrice">
+              {{:: item.price | currency: currencySymbol }}
+            </span>
+          </td>
+          <td md-cell class="text-center">
+            <star-rating ng-model="item.ratingAvg" readonly="true">
+            </star-rating>
+          </td>
+          <td md-cell class="text-center">
+            {{:: item.views }}
+          </td>
+          <td md-cell class="text-center">
+            <md-select class="label" ng-model="item.status" aria-label="Status"
+              ng-class="item.status == 'Active' ? 'green' : 'yellow'">
+              <md-option value="Active" ng-click="onChangeStatus(item, 'Active')" translate="ACTIVE" translate-cloak="ACTIVE">
+              </md-option>
+              <md-option value="Inactive" ng-click="onChangeStatus(item, 'Inactive')" translate="INACTIVE" translate-cloak="INACTIVE">
+              </md-option>
+            </md-select>
+          </td>
+          <td md-cell>
+            <section layout="row" layout-align="center center">
+
+              <div flex="50">
+                <md-button class="md-icon-button md-primary" ng-click="onEdit($event, item)" aria-label="Edit">
+                  <ng-md-icon icon="mode_edit"></ng-md-icon>
+                </md-button>
+              </div>
+              <div flex="50">
+                <md-button class="md-icon-button md-primary" ng-click="onDelete($event, item)" aria-label="Delete">
+                  <ng-md-icon icon="clear"></ng-md-icon>
+                </md-button>
+              </div>
+            </section>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </md-table-container>
+  <md-table-pagination md-limit-options="rowOptions" md-limit="query.limit" md-page="query.page"
+    md-total="{{query.total}}" md-on-paginate="onPaginationChange" md-label="{ rowsPerPage: '{{ 'ROWS_PER_PAGE' | translate }}', of: '{{ 'OF' | translate }}' }">
+  </md-table-pagination>
+</md-content>

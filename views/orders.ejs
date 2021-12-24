@@ -1,0 +1,151 @@
+<md-content class="main-content" ng-controller="OrderCtrl">
+  <md-table-toolbar>
+    <div layout="row" layout-xs="column" layout-padding layout-align-gt-xs="start center">
+      <md-input-container class="md-block" flex="100" flex-gt-md="20">
+        <label translate="SEARCH_BY_ORDER_NUMBER" translate-cloak="SEARCH_BY_ORDER_NUMBER"></label>
+        <input type="text" ng-model="query.number" placeholder>
+      </md-input-container>
+      <md-input-container class="md-block" flex="100" flex-gt-md="20">
+        <label translate="STATUS" translate-cloak="STATUS"></label>
+        <md-select ng-model="query.status">
+          <md-option ng-value="null" translate="ALL" translate-cloak="ALL">
+          </md-option>
+          <md-option value="Pending" translate="PENDING" translate-cloak="PENDING">
+          </md-option>
+          <md-option value="In Process" translate="IN_PROCESS" translate-cloak="IN_PROCESS">
+          </md-option>
+          <md-option value="Packed" translate="PACKED" translate-cloak="PACKED">
+          </md-option>
+          <md-option value="Shipped Out" translate="SHIPPED_OUT" translate-cloak="SHIPPED_OUT">
+          </md-option>
+          <md-option value="Delivered" translate="DELIVERED" translate-cloak="DELIVERED">
+          </md-option>
+          <md-option value="Cancelled" translate="CANCELLED" translate-cloak="CANCELLED">
+          </md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container class="md-block" flex="100" flex-gt-md="20">
+        <label translate="PAYMENT_STATUS" translate-cloak="PAYMENT_STATUS"></label>
+        <md-select ng-model="query.paymentStatus">
+          <md-option ng-value="null" translate="ALL" translate-cloak="ALL">
+          </md-option>
+          <md-option value="Unpaid" translate="UNPAID" translate-cloak="UNPAID"></md-option>
+          <md-option value="Paid" translate="PAID" translate-cloak="PAID"></md-option>
+          <md-option value="Refunded" translate="REFUNDED" translate-cloak="REFUNDED"></md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container class="md-block" flex="100" flex-gt-md="20">
+        <label translate="START" translate-cloak="START"></label>
+        <input type="date" ng-model="query.start" placeholder>
+      </md-input-container>
+      <md-input-container class="md-block" flex="100" flex-gt-md="20">
+        <label translate="END" translate-cloak="END"></label>
+        <input type="date" ng-model="query.end" placeholder>
+      </md-input-container>
+      <div flex-gt-md="20">
+        <md-button class="md-primary md-raised no-margin" md-colors="::{ color: 'white' }" aria-label="New"
+          ng-click="onReload()" translate="SEARCH" translate-cloak="SEARCH">
+        </md-button>
+      </div>
+
+      <div flex hide-xs hide-sm></div>
+      <div>
+        <md-button class="md-icon-button" hide-xs hide-sm aria-label="Reload" ng-click="onReload()">
+          <ng-md-icon icon="refresh">
+          </ng-md-icon>
+        </md-button>
+      </div>
+    </div>
+  </md-table-toolbar>
+
+  <md-table-container>
+    <table md-table md-progress="promise">
+      <thead md-head md-on-reorder="onReorder">
+        <tr md-row>
+          <th md-column class="text-center text-uppercase bold" md-order-by="number">
+            <md-icon></md-icon>
+            <span translate="ORDER_NUMBER" translate-cloak="ORDER_NUMBER"></span>
+          </th>
+          <th md-column class="text-center text-uppercase bold" md-order-by="createdAt">
+            <md-icon></md-icon>
+            <span translate="DATE" translate-cloak="DATE"></span>
+          </th>
+          <th md-column class="text-center text-uppercase bold">
+            <span translate="CUSTOMER" translate-cloak="CUSTOMER"></span>
+          </th>
+          <th md-column class="text-center text-uppercase bold" md-order-by="total">
+            <md-icon></md-icon>
+            <span translate="TOTAL" translate-cloak="TOTAL"></span>
+          </th>
+          <th md-column class="text-center text-uppercase bold">
+            <span translate="PAYMENT_STATUS" translate-cloak="PAYMENT_STATUS"></span>
+          </th>
+          <th md-column class="text-center text-uppercase bold">
+            <span translate="STATUS" translate-cloak="STATUS"></span>
+          </th>
+          <th md-column></th>
+        </tr>
+      </thead>
+      <tbody md-body>
+        <tr md-row ng-repeat="order in orders track by order.id">
+          <td class="text-center link" md-cell ng-click="onView($event, order)">
+            # {{:: order.number }}
+          </td>
+          <td class="text-center" md-cell>{{:: order.createdAt | date:'dd-MM-yyyy' }}</td>
+          <td class="text-center" md-cell>
+            <span ng-if="!order.customer.isAnonymous()">{{:: order.customer.name }}</span>
+            <span ng-if="order.customer.isAnonymous()" translate="GUEST" translate-cloak="GUEST"></span>
+          </td>
+          <td class="text-center" md-cell>{{:: order.total | currency: currencySymbol }}</td>
+          <td class="text-center" md-cell>
+            <md-select class="label" ng-model="order.paymentStatus" placeholder="{{ 'PAYMENT_STATUS' | translate }}"
+              ng-change="onChangePaymentStatus(order)"
+              ng-class="{ yellow: order.isUnpaid(), green: order.isPaid(), purple: order.isRefunded() }">
+              <md-option value="Unpaid" translate="UNPAID" translate-cloak="UNPAID"></md-option>
+              <md-option value="Paid" translate="PAID" translate-cloak="PAID"></md-option>
+              <md-option value="Refunded" translate="REFUNDED" translate-cloak="REFUNDED"></md-option>
+            </md-select>
+          </td>
+          <td class="text-center" md-cell>
+            <md-select class="label" ng-model="order.status" placeholder="{{ 'STATUS' | translate }}"
+              ng-class="{ yellow: order.isPending(), purple: order.isInProcess(), blue: order.isPacked(), soft: order.isShippedOut(), green: order.isDelivered(), red: order.isCancelled() }">
+              <md-option value="Pending" ng-click="onChangeStatus(order, 'Pending')" translate="PENDING" translate-cloak="PENDING">
+              </md-option>
+              <md-option value="In Process" ng-click="onChangeStatus(order, 'In Process')" translate="IN_PROCESS" translate-cloak="IN_PROCESS">
+              </md-option>
+              <md-option value="Packed" ng-click="onChangeStatus(order, 'Packed')" translate="PACKED" translate-cloak="PACKED">
+              </md-option>
+              <md-option value="Shipped Out" ng-click="onChangeStatus(order, 'Shipped Out')" translate="SHIPPED_OUT" translate-cloak="SHIPPED_OUT">
+              </md-option>
+              <md-option value="Delivered" ng-click="onChangeStatus(order, 'Delivered')" translate="DELIVERED" translate-cloak="DELIVERED">
+              </md-option>
+              <md-option value="Cancelled" ng-click="onChangeStatus(order, 'Cancelled')" translate="CANCELLED" translate-cloak="CANCELLED">
+              </md-option>
+            </md-select>
+          </td>
+          <td md-cell>
+            <md-button class="md-icon-button md-primary" ng-click="onDelete($event, order)" aria-label="Delete">
+              <ng-md-icon icon="clear"></ng-md-icon>
+            </md-button>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot md-foot ng-if="total > 0">
+        <tr md-row>
+          <td md-cell></td>
+          <td md-cell></td>
+          <td md-cell></td>
+          <td md-cell class="text-center">
+            <strong>{{ total | currency: currencySymbol }}</strong>
+          </td>
+          <td md-cell colspan="6"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </md-table-container>
+
+  <md-table-pagination md-limit-options="rowOptions" md-limit="query.limit" md-page="query.page"
+    md-total="{{query.total}}" md-on-paginate="onPaginationChange" md-label="{ rowsPerPage: '{{ 'ROWS_PER_PAGE' | translate }}', of: '{{ 'OF' | translate }}' }">
+  </md-table-pagination>
+
+</md-content>

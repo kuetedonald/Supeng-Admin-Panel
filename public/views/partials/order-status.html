@@ -1,0 +1,71 @@
+<md-dialog flex="100" flex-gt-xs="30" aria-label="Cancel order dialog">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <span ng-if="status === 'Pending'">
+        {{ 'PENDING_ORDER' | translate }} # {{ order.number }}
+      </span>
+      <span ng-if="status === 'In Process'">
+        {{ 'IN_PROCESS_ORDER' | translate }} # {{ order.number }}
+      </span>
+      <span ng-if="status === 'Packed'">
+        {{ 'PACK_ORDER' | translate }} # {{ order.number }}
+      </span>
+      <span ng-if="status === 'Shipped Out'">
+        {{ 'SHIP_ORDER' | translate }} # {{ order.number }}
+      </span>
+      <span ng-if="status === 'Delivered'">
+        {{ 'DELIVER_ORDER' | translate }} # {{ order.number }}
+      </span>
+      <span ng-if="status === 'Cancelled'">
+        {{ 'CANCEL_ORDER' | translate }} # {{ order.number }}
+      </span>
+      <span flex></span>
+      <ng-md-icon icon="close" class="icon-close" ng-click="onCancel()" aria-label="Close dialog"></ng-md-icon>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+
+    <form name="form" novalidate>
+
+      <div layout="column" layout-padding>
+
+        <div layout="row" ng-if="status === 'Cancelled'">
+          <md-input-container class="md-block" flex>
+            <label>{{ 'REASON' | translate }}</label>
+            <input placeholder name="reason" ng-model="input.reason">
+          </md-input-container>
+        </div>
+
+        <div layout="row" ng-if="status === 'Shipped Out'">
+          <md-input-container class="md-block" flex>
+            <label>{{ 'TRACKING_NUMBER' | translate }}</label>
+            <input placeholder name="trackingNumber" ng-model="input.tracking.number">
+          </md-input-container>
+        </div>
+
+        <div layout="row" ng-if="status === 'Shipped Out'">
+          <md-input-container class="md-block" flex>
+            <label>{{ 'CARRIER' | translate }}</label>
+            <input placeholder name="carrier" ng-model="input.tracking.carrier">
+          </md-input-container>
+        </div>
+
+        <md-input-container class="md-block no-margin">
+          <md-checkbox ng-model="input.notify" aria-label="Notify customer">
+            {{ 'NOTIFY_CUSTOMER' | translate }}
+          </md-checkbox>
+        </md-input-container>
+
+      </div>
+    </form>
+  </md-dialog-content>
+  <md-dialog-actions layout="row">
+    <span flex></span>
+    <md-button ng-click="onCancel()">
+      {{ 'CLOSE' | translate }}
+    </md-button>
+    <md-button class="md-primary md-raised" ng-disabled="!form.$valid || isSaving" ng-click="onSubmit(form.$valid)">
+      {{ !isSaving ? ('SAVE' | translate) : ('SAVING' | translate) }}
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

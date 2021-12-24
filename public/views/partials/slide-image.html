@@ -1,0 +1,159 @@
+<md-dialog flex="100" flex-gt-xs="60" flex-gt-sm="40" aria-label="Slider Image dialog">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <span ng-if="obj.isNew()">{{ 'NEW' | translate }}</span>
+      <span ng-if="!obj.isNew()">{{ 'EDIT' | translate }}</span>
+      <span flex></span>
+      <ng-md-icon icon="close" class="icon-close" ng-click="onClose()" aria-label="Close dialog"></ng-md-icon>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <div class="md-dialog-content">
+      <md-card-content>
+
+        <form name="form" novalidate>
+
+          <div layout="row">
+            <div flex="100" class="box-picture img-box"
+              ng-style="{'background-image': obj.image ? 'url('+obj.image.url()+')' : 'url(/images/placeholder.jpg)' }">
+            </div>
+          </div>
+
+          <br />
+
+          <div layout="row" layout-align="start">
+            <md-input-container md-no-float class="md-block" flex="70">
+              <label>{{ 'UPLOAD_PICTURE' | translate }}</label>
+              <input type="text" value="{{ obj.image.name() }}" disabled placeholder>
+            </md-input-container>
+
+            <div layout="column" layout-align="start center" flex="30">
+              <ng-md-icon icon="photo_camera" class="photo-camera" ng-class="{ 'icon-active': obj.image.url() }">
+              </ng-md-icon>
+              <md-button type="button" class="md-raised md-mini" ngf-select="uploadImage($file)" ngf-accept="'image/*'"
+                ngf-pattern="'image/*'">
+                {{ 'BROWSE' | translate }}
+              </md-button>
+              <md-progress-circular class="md-primary" md-diameter="30" ng-if="isUploading">
+              </md-progress-circular>
+            </div>
+          </div>
+
+          <div layout="row">
+            <md-input-container flex>
+              <label>{{ 'SORT' | translate }}</label>
+              <input name="sort" type="number" min="0" ng-model="obj.sort" required placeholder>
+              <div ng-messages="form.sort.$error">
+                <div ng-message="required">Field required</div>
+              </div>
+            </md-input-container>
+          </div>
+
+          <div layout="row">
+            <md-input-container class="md-block">
+              <label>{{ 'LINK_TO' | translate }}</label>
+              <md-select name="type" ng-change="onTypeChanged()" ng-model="obj.type">
+                <md-option value="null">{{ 'NO_LINK' | translate }}</md-option>
+                <md-option value="brand">{{ 'BRAND' | translate }}</md-option>
+                <md-option value="category">{{ 'CATEGORY' | translate }}</md-option>
+                <md-option value="subcategory">{{ 'SUBCATEGORY' | translate }}</md-option>
+                <md-option value="item">{{ 'ITEM' | translate }}</md-option>
+                <md-option value="url">{{ 'URL' | translate }}</md-option>
+              </md-select>
+            </md-input-container>
+          </div>
+
+          <div layout="row" ng-if="obj.type === 'item'">
+            <md-input-container class="md-block" flex>
+              <label>{{ 'ITEM' | translate }}</label>
+              <md-autocomplete flex md-no-float md-clear-button="false" md-input-name="item" md-no-cache="true"
+                md-selected-item="obj.item" md-search-text="searchItemText"
+                md-items="item in queryItems(searchItemText)" md-item-text="item.name" md-require-match>
+                <md-item-template>
+                  <span md-highlight-text="searchItemText">{{ item.name }}</span>
+                </md-item-template>
+                <md-not-found>
+                  {{ 'NO_RESULTS_FOUND' | translate }}
+                </md-not-found>
+              </md-autocomplete>
+            </md-input-container>
+          </div>
+
+          <div layout="row" ng-if="obj.type === 'brand'">
+            <md-input-container class="md-block" flex>
+              <label>{{ 'BRAND' | translate }}</label>
+              <md-autocomplete flex md-no-float md-clear-button="false" md-input-name="brand" md-no-cache="true"
+                md-selected-item="obj.brand" md-search-text="searchBrandText"
+                md-items="brand in queryBrands(searchBrandText)" md-item-text="brand.name" md-require-match>
+                <md-item-template>
+                  <span md-highlight-text="searchBrandText">{{ brand.name }}</span>
+                </md-item-template>
+                <md-not-found>
+                  {{ 'NO_RESULTS_FOUND' | translate }}
+                </md-not-found>
+              </md-autocomplete>
+            </md-input-container>
+          </div>
+
+          <div layout="row" ng-if="obj.type === 'category'">
+            <md-input-container class="md-block" flex>
+              <label>{{ 'CATEGORY' | translate }}</label>
+              <md-autocomplete flex md-no-float md-clear-button="false" md-input-name="category" md-no-cache="true"
+                md-selected-item="obj.category" md-search-text="searchCategoryText"
+                md-items="category in queryCategories(searchCategoryText)" md-item-text="category.name" md-require-match>
+                <md-item-template>
+                  <span md-highlight-text="searchCategoryText">{{ category.name }}</span>
+                </md-item-template>
+                <md-not-found>
+                  {{ 'NO_RESULTS_FOUND' | translate }}
+                </md-not-found>
+              </md-autocomplete>
+            </md-input-container>
+          </div>
+
+          <div layout="row" ng-if="obj.type === 'subcategory'">
+            <md-input-container class="md-block" flex>
+              <label>{{ 'SUBCATEGORY' | translate }}</label>
+              <md-autocomplete flex md-no-float md-clear-button="false" md-input-name="subcategory" md-no-cache="true"
+                md-selected-item="obj.subcategory" md-search-text="searchSubCategoryText"
+                md-items="subcategory in querySubCategories(searchSubCategoryText)" md-item-text="subcategory.name + ' - ' + subcategory.category.name" md-require-match>
+                <md-item-template>
+                  <span md-highlight-text="searchSubCategoryText">
+                    {{ subcategory.name }} - {{ subcategory.category.name }}
+                  </span>
+                </md-item-template>
+                <md-not-found>
+                  {{ 'NO_RESULTS_FOUND' | translate }}
+                </md-not-found>
+              </md-autocomplete>
+            </md-input-container>
+          </div>
+
+          <div layout="row" ng-if="obj.type === 'url'">
+            <md-input-container flex>
+              <label>{{ 'URL' | translate }}</label>
+              <input name="url" type="url" ng-model="obj.url" placeholder>
+            </md-input-container>
+          </div>
+
+          <md-input-container flex>
+            <md-checkbox ng-model="obj.isActive" aria-label="{{ 'ACTIVE' | translate }}">
+              {{ 'ACTIVE' | translate }}
+            </md-checkbox>
+          </md-input-container>
+
+        </form>
+
+      </md-card-content>
+    </div>
+  </md-dialog-content>
+  <md-dialog-actions layout="row">
+    <span flex></span>
+    <md-button ng-click="onClose()">
+      {{ 'CLOSE' | translate }}
+    </md-button>
+    <md-button class="md-raised md-primary" ng-disabled="!form.$valid" ng-click="onSubmit(form.$valid)">
+      {{ !isSavingDisabled ? ('SAVE' | translate) : ('SAVING' | translate) }}
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

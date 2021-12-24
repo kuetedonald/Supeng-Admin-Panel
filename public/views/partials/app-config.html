@@ -1,0 +1,833 @@
+<md-dialog flex="100" flex-gt-xs="50" aria-label="App Config dialog">
+
+  <form name="form" role="form" novalidate>
+
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>{{ 'APP_CONFIG' | translate }}</h2>
+        <span flex></span>
+        <ng-md-icon aria-label="Close dialog" icon="close" class="icon-close" ng-click="hide()">
+        </ng-md-icon>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <md-tabs md-dynamic-height md-border-bottom>
+
+        <md-tab label="{{ 'ADMIN_PORTAL' | translate }}">
+
+          <md-content layout="column" layout-padding>
+
+            <div>
+              <div layout="row" layout-align="start">
+                <md-input-container md-no-float class="md-block" flex="70">
+                  <label>{{ 'LOGO' | translate }}</label>
+                  <input type="text" value="{{ obj.admin.logo.name() }}" disabled>
+                </md-input-container>
+
+                <div layout="column" layout-align="start center" flex="30">
+                  <ng-md-icon icon="photo_camera" class="photo-camera"
+                    ng-class="{ 'icon-active': obj.admin.logo.url() }">
+                  </ng-md-icon>
+                  <md-button type="button" class="md-raised md-mini" ngf-select="uploadImage('logo', $file)"
+                    ngf-accept="'image/*'" ngf-pattern="'image/*'">
+                    {{ 'BROWSE' | translate }}
+                  </md-button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div layout="row" layout-align="start">
+                <md-input-container md-no-float class="md-block" flex="70">
+                  <label>{{ 'FAVICON' | translate }} (PNG. 32x32px.)</label>
+                  <input type="text" value="{{ obj.admin.favicon.name() }}" disabled>
+                </md-input-container>
+
+                <div layout="column" layout-align="start center" flex="30">
+                  <ng-md-icon icon="photo_camera" class="photo-camera"
+                    ng-class="{ 'icon-active': obj.admin.favicon.url() }">
+                  </ng-md-icon>
+                  <md-button type="button" class="md-raised md-mini" ngf-select="uploadImage('favicon', $file)"
+                    ngf-accept="'image/*'" ngf-pattern="'image/*'">
+                    {{ 'BROWSE' | translate }}
+                  </md-button>
+                </div>
+              </div>
+            </div>
+
+          </md-content>
+
+        </md-tab>
+
+        <md-tab label="{{ 'LAYOUTS' | translate }}">
+          <md-content layout="column" layout-padding>
+            <div>
+
+              <p class="md-subhead bold">
+                {{ 'HOME_PAGE' | translate }}
+              </p>
+
+              <div layout="row">
+                <md-radio-group ng-model="obj.layout.home.enabled">
+                  <md-radio-button ng-value="null" class="md-primary">
+                    {{ 'DEFAULT' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="true" class="md-primary">
+                    {{ 'CUSTOM' | translate }}
+                  </md-radio-button>
+                </md-radio-group>
+              </div>
+
+              <div ng-if="obj.layout.home.enabled">
+                <div layout="row" layout-align="start center">
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'BLOCK' | translate }}</label>
+                    <md-select aria-label="Block" ng-model-options="{ trackBy: '$value.type' }"
+                      ng-model="selectedHomePageBlock">
+                      <md-option ng-repeat="homePageBlock in homePageBlocks track by $index" ng-value="homePageBlock">
+                        {{ homePageBlock.type | uppercase | translate }}
+                      </md-option>
+                    </md-select>
+                  </md-input-container>
+                  <div>
+                    <md-button ng-click="onAddBlock(selectedHomePageBlock)" ng-disabled="!selectedHomePageBlock">
+                      {{ 'ADD' | translate }}
+                    </md-button>
+                  </div>
+                </div>
+
+                <p class="md-body-1" ng-if="obj.layout.home.blocks.length">
+                  {{ 'DRAG_AND_DROP_HINT' | translate }}
+                </p>
+
+                <md-list drag-to-reorder-bind="obj.layout.home.blocks">
+                  <md-list-item class="md-3-line" dtr-draggable
+                    ng-repeat="block in obj.layout.home.blocks track by $index">
+                    <div class="md-list-item-text">
+                      <h3>{{ block.type | uppercase | translate }}</h3>
+                    </div>
+                    <div class="md-secondary">
+                      <md-button class="md-warn" ng-click="onRemoveBlock(block)">
+                        {{ 'DELETE' | translate }}
+                      </md-button>
+                    </div>
+
+                    <md-divider ng-if="!$last"></md-divider>
+                  </md-list-item>
+                </md-list>
+
+              </div>
+
+              <p class="md-subhead bold">
+                {{ 'CATEGORIES' | translate }}
+              </p>
+
+              <div layout="row">
+                <md-radio-group ng-model="obj.layout.categoryList.enabled">
+                  <md-radio-button ng-value="null" class="md-primary">
+                    {{ 'DEFAULT' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="true" class="md-primary">
+                    {{ 'CUSTOM' | translate }}
+                  </md-radio-button>
+                </md-radio-group>
+              </div>
+
+              <div ng-if="obj.layout.categoryList.enabled">
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (xs)</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.columnsXs">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (md)</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.columnsMd">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (lg)</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.columnsLg">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'FONT_SIZE' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.fontSize">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'RADIUS' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.radius">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'HEIGHT' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.height">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'BOX_SHADOW' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.boxShadow">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'MARGIN' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.categoryList.item.margin">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="no-margin">
+                    <md-checkbox aria-label="Hide title" ng-model="obj.layout.categoryList.item.hideTitle">
+                      {{ 'HIDE_TITLE' | translate }}
+                    </md-checkbox>
+                  </md-input-container>
+                </div>
+
+              </div>
+
+              <p class="md-subhead bold">
+                {{ 'SUB_CATEGORIES' | translate }}
+              </p>
+
+              <div layout="row">
+                <md-radio-group ng-model="obj.layout.subcategoryList.enabled">
+                  <md-radio-button ng-value="null" class="md-primary">
+                    {{ 'DEFAULT' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="true" class="md-primary">
+                    {{ 'CUSTOM' | translate }}
+                  </md-radio-button>
+                </md-radio-group>
+              </div>
+
+              <div ng-if="obj.layout.subcategoryList.enabled">
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (xs)</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.columnsXs">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (md)</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.columnsMd">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (lg)</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.columnsLg">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'FONT_SIZE' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.fontSize">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'RADIUS' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.radius">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'HEIGHT' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.height">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'BOX_SHADOW' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.boxShadow">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'MARGIN' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.subcategoryList.item.margin">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="no-margin">
+                    <md-checkbox aria-label="Hide title" ng-model="obj.layout.subcategoryList.item.hideTitle">
+                      {{ 'HIDE_TITLE' | translate }}
+                    </md-checkbox>
+                  </md-input-container>
+                </div>
+
+              </div>
+
+              <p class="md-subhead bold">
+                {{ 'BRANDS' | translate }}
+              </p>
+
+              <div layout="row">
+                <md-radio-group ng-model="obj.layout.brandList.enabled">
+                  <md-radio-button ng-value="null" class="md-primary">
+                    {{ 'DEFAULT' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="true" class="md-primary">
+                    {{ 'CUSTOM' | translate }}
+                  </md-radio-button>
+                </md-radio-group>
+              </div>
+
+              <div ng-if="obj.layout.brandList.enabled">
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (xs)</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.columnsXs">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (md)</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.columnsMd">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (lg)</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.columnsLg">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'FONT_SIZE' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.fontSize">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'RADIUS' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.radius">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'HEIGHT' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.height">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'BOX_SHADOW' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.boxShadow">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'MARGIN' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.brandList.item.margin">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="no-margin">
+                    <md-checkbox aria-label="Hide title" ng-model="obj.layout.brandList.item.hideTitle">
+                      {{ 'HIDE_TITLE' | translate }}
+                    </md-checkbox>
+                  </md-input-container>
+                </div>
+
+              </div>
+
+              <p class="md-subhead bold">
+                {{ 'ITEMS' | translate }}
+              </p>
+
+              <div layout="row">
+                <md-radio-group ng-model="obj.layout.itemList.enabled">
+                  <md-radio-button ng-value="null" class="md-primary">
+                    {{ 'DEFAULT' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="true" class="md-primary">
+                    {{ 'CUSTOM' | translate }}
+                  </md-radio-button>
+                </md-radio-group>
+              </div>
+
+              <div ng-if="obj.layout.itemList.enabled">
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (xs)</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.columnsXs">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (md)</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.columnsMd">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'COLUMNS' | translate }} (lg)</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.columnsLg">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'BORDER' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.border">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'RADIUS' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.radius">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'MARGIN' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.margin">
+                  </md-input-container>
+
+                  <md-input-container class="md-block" flex flex-gt-xs="50">
+                    <label>{{ 'PADDING' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.padding">
+                  </md-input-container>
+                </div>
+
+                <div layout="row">
+                  <md-input-container class="md-block" flex>
+                    <label>{{ 'BOX_SHADOW' | translate }}</label>
+                    <input type="text" placeholder ng-model="obj.layout.itemList.item.boxShadow">
+                  </md-input-container>
+                </div>
+
+              </div>
+
+            </div>
+          </md-content>
+        </md-tab>
+
+        <md-tab label="{{ 'LOGIN' | translate }}">
+          <md-content layout="column" layout-padding>
+
+            <div>
+
+              <div layout="row">
+                <md-input-container class="no-margin">
+                  <md-checkbox aria-label="Enable Facebook Login" ng-change="obj.auth = obj.auth" ng-model="obj.auth.isFacebookLoginEnabled">
+                    Facebook Login
+                  </md-checkbox>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="no-margin">
+                  <md-checkbox aria-label="Enable Google Login" ng-change="obj.auth = obj.auth" ng-model="obj.auth.isGoogleLoginEnabled">
+                    Google Login
+                  </md-checkbox>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="no-margin">
+                  <md-checkbox aria-label="Enable Google Login" ng-change="obj.auth = obj.auth" ng-model="obj.auth.isAppleLoginEnabled">
+                    Apple Login (iOS)
+                  </md-checkbox>
+                </md-input-container>
+              </div>
+            </div>
+
+          </md-content>
+        </md-tab>
+
+        <md-tab label="{{ 'CHECKOUT_CART' | translate }}">
+          <md-content layout="column" layout-padding>
+
+            <div>
+
+              <div>
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'CART_EXPIRATION' | translate }}</label>
+                  <input type="number" placeholder ng-model="obj.admin.cartExpiration">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="no-margin">
+                  <md-checkbox aria-label="Enable cash on delivery" ng-model="obj.admin.isCodEnabled">
+                    {{ 'ENABLE_COD' | translate }}
+                  </md-checkbox>
+                </md-input-container>
+
+                <md-input-container class="no-margin">
+                  <md-checkbox aria-label="Enable card payments" ng-model="obj.admin.isCardEnabled">
+                    {{ 'ENABLE_CARD' | translate }}
+                  </md-checkbox>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="no-margin">
+                  <md-checkbox aria-label="Enable guest checkout" ng-model="obj.admin.isGuestCheckoutEnabled">
+                    {{ 'ENABLE_GUEST_CHECKOUT' | translate }}
+                  </md-checkbox>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'MINIMUM_ORDER_AMOUNT' | translate }}</label>
+                  <input placeholder type="number" min="0" ng-model="obj.admin.minimumOrderAmount">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'MAXIMUM_ORDER_AMOUNT' | translate }}</label>
+                  <input placeholder type="number" min="0" ng-model="obj.admin.maximumOrderAmount">
+                </md-input-container>
+              </div>
+
+              <p class="md-subhead bold">{{ 'STRIPE_SETTINGS' | translate }}</p>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'SECRET_KEY' | translate }}</label>
+                  <input placeholder type="text" ng-model="obj.stripe.secretKey">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'CURRENCY' | translate }}</label>
+                  <input placeholder type="text" ng-model="obj.stripe.currency">
+                  <span class="md-caption link" ng-click="openStripeCurrencies()">
+                    {{ 'SUPPORTED_CURRENCIES' | translate }}
+                  </span>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'CHARGE_DESCRIPTION' | translate }}</label>
+                  <input placeholder type="text" ng-model="obj.stripe.chargeDescription">
+                  <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %CUSTOMER_NAME%, %ORDER_NUMBER%</span>
+                </md-input-container>
+              </div>
+
+            </div>
+
+          </md-content>
+        </md-tab>
+
+        <md-tab label="{{ 'ABOUT' | translate }}">
+          <md-content layout="column" layout-padding>
+
+            <p class="md-body-1 no-margin">{{ 'ABOUT' | translate }}</p>
+
+            <trix-editor angular-trix ng-model="obj.about.description">
+            </trix-editor>
+
+            <div>
+              <md-input-container class="md-block">
+                <label>{{ 'CONTACT_EMAIL' | translate }}</label>
+                <input placeholder name="email" type="text" ng-model="obj.about.email">
+              </md-input-container>
+            </div>
+
+            <md-input-container flex>
+              <label>{{ 'CONTACT_PHONE' | translate }}</label>
+              <input placeholder name="phone" type="text" ng-model="obj.about.phone">
+            </md-input-container>
+            <md-input-container flex>
+              <label>{{ 'FACEBOOK' | translate }}</label>
+              <input placeholder name="facebook" type="text" ng-model="obj.about.facebook">
+            </md-input-container>
+            <md-input-container flex>
+              <label>{{ 'INSTAGRAM' | translate }}</label>
+              <input placeholder name="instagram" type="text" ng-model="obj.about.instagram">
+            </md-input-container>
+            <md-input-container flex>
+              <label>{{ 'YOUTUBE' | translate }}</label>
+              <input placeholder name="youtube" type="text" ng-model="obj.about.youtube">
+            </md-input-container>
+          </md-content>
+        </md-tab>
+
+        <md-tab label="{{ 'EMAIL_SETTINGS' | translate }}">
+          <md-content layout="column" layout-padding>
+
+            <div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'EMAIL_FROM_ADDRESS' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.email.fromAddress">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'EMAIL_FOOTER' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.email.footer">
+                </md-input-container>
+              </div>
+
+              <p class="bold md-subhead">{{ 'EMAIL_NEW_ORDER' | translate }}</p>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="50">
+                  <label>{{ 'EMAIL_FOR_NOTIFICATIONS_OF_NEW_ORDERS' | translate }}</label>
+                  <input type="email" placeholder ng-model="obj.email.addressForNewOrders">
+                </md-input-container>
+              </div>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.subjectForNewOrders">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.bodyNewOrder" rows="3" placeholder ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.detailsNewOrder">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+              <p class="bold md-subhead">{{ 'ORDER_CONFIRMATION' | translate }}</p>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.subjectOrderConfirmation">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.bodyOrderConfirmation" rows="3" placeholder
+                  ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.detailsOrderConfirmation">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+              <p class="bold md-subhead">{{ 'ORDER_IN_PROCESS' | translate }}</p>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.order_subject_in_process">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.order_body_in_process" rows="3" placeholder
+                  ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.order_details_in_process">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+              <p class="bold md-subhead">{{ 'ORDER_PACKED' | translate }}</p>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.order_subject_packed">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.order_body_packed" rows="3" placeholder
+                  ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.order_details_packed">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+              <p class="bold md-subhead">{{ 'ORDER_SHIPPED_OUT' | translate }}</p>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.order_subject_shipped_out">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.order_body_shipped_out" rows="3" placeholder
+                  ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%, %TRACKING_NUMBER%,
+                  %TRACKING_CARRIER%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.order_details_shipped_out">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+              <p class="bold md-subhead">{{ 'ORDER_DELIVERED' | translate }}</p>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.order_subject_delivered">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.order_body_delivered" rows="3" placeholder
+                  ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.order_details_delivered">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+              <p class="bold md-subhead">{{ 'ORDER_CANCELLED' | translate }}</p>
+
+              <md-input-container>
+                <label>{{ 'SUBJECT' | translate }}</label>
+                <input type="text" placeholder ng-model="obj.email.order_subject_cancelled">
+                <span class="md-caption">{{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%,
+                  %CUSTOMER_NAME%</span>
+              </md-input-container>
+
+              <md-input-container class="md-block">
+                <label>{{ 'BODY' | translate }}</label>
+                <textarea ng-model="obj.email.order_body_cancelled" rows="3" placeholder
+                  ui-tinymce="tinymceOptions"></textarea>
+                <span class="md-caption">
+                  {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%, %ORDER_TOTAL%, %CUSTOMER_NAME%, %REASON%
+                </span>
+              </md-input-container>
+
+              <md-input-container class="no-margin">
+                <md-checkbox aria-label="Show order details" ng-model="obj.email.order_details_cancelled">
+                  {{ 'SHOW_ORDER_DETAILS' | translate }}
+                </md-checkbox>
+              </md-input-container>
+
+            </div>
+
+          </md-content>
+        </md-tab>
+
+        <md-tab label="{{ 'PUSH_SETTINGS' | translate }}">
+
+          <md-content layout="column" layout-padding>
+
+            <div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="60">
+                  <label>{{ 'ORDER_IN_PROCESS_NOTIFICATION' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.push.order_in_process">
+                  <span class="md-caption">
+                    {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%
+                  </span>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="60">
+                  <label>{{ 'ORDER_PACKED_NOTIFICATION' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.push.order_packed">
+                  <span class="md-caption">
+                    {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%
+                  </span>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="60">
+                  <label>{{ 'ORDER_SHIPPED_OUT_NOTIFICATION' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.push.order_shipped_out">
+                  <span class="md-caption">
+                    {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%
+                  </span>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="60">
+                  <label>{{ 'ORDER_DELIVERED_NOTIFICATION' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.push.order_delivered">
+                  <span class="md-caption">
+                    {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%
+                  </span>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex flex-gt-xs="60">
+                  <label>{{ 'ORDER_CANCELLED_NOTIFICATION' | translate }}</label>
+                  <input type="text" placeholder ng-model="obj.push.order_cancelled">
+                  <span class="md-caption">
+                    {{ 'SUPPORTED_TAGS' | translate }}: %ORDER_NUMBER%
+                  </span>
+                </md-input-container>
+              </div>
+
+            </div>
+
+          </md-content>
+        </md-tab>
+
+      </md-tabs>
+
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="hide()">
+        {{ 'CLOSE' | translate }}
+      </md-button>
+      <md-button type="submit" class="md-raised md-primary" ng-click="onSave()">
+        {{ !isSaving ? ('SAVE' | translate) : ('SAVING' | translate) }}
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

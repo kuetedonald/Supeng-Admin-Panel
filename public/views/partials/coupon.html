@@ -1,0 +1,332 @@
+<md-dialog flex="100" flex-gt-xs="40" aria-label="dialog">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <span ng-if="obj.isNew()">{{ 'NEW' | translate }}</span>
+      <span ng-if="!obj.isNew()">{{ 'EDIT' | translate }}</span>
+      <span flex></span>
+      <ng-md-icon icon="close" class="icon-close" ng-click="onClose()" aria-label="Close dialog">
+      </ng-md-icon>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <form name="form" novalidate>
+
+      <md-tabs md-dynamic-height md-border-bottom>
+        <md-tab label="{{ 'GENERAL' | translate }}">
+
+          <div layout="row" layout-xs="column" layout-sm="column" layout-padding>
+
+            <div flex>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'COUPON_CODE' | translate }}</label>
+                  <input required placeholder name="code" ng-model="obj.code">
+                  <div ng-messages="form.code.$error">
+                    <div ng-message="required">{{ 'FIELD_REQUIRED' | translate }}</div>
+                  </div>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'COUPON_TYPE' | translate }}</label>
+                  <md-select name="type" required placeholder ng-model="obj.type">
+                    <md-option value="fixed">{{ 'FIXED' | translate }}</md-option>
+                    <md-option value="percentage">{{ 'PERCENTAGE' | translate }}</md-option>
+                  </md-select>
+                  <div ng-messages="form.type.$error">
+                    <div ng-message="required">{{ 'FIELD_REQUIRED' | translate }}</div>
+                  </div>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'COUPON_AMOUNT' | translate }}</label>
+                  <input type="number" name="amount" min="0" ng-max="{{ obj.type === 'percentage' ? 100 : null }}"
+                    placeholder required ng-model="obj.amount">
+                  <div ng-messages="form.amount.$error">
+                    <div ng-message="required">{{ 'FIELD_REQUIRED' | translate }}</div>
+                  </div>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'STATUS' | translate }}</label>
+                  <md-select name="status" required placeholder ng-model="obj.status">
+                    <md-option value="Active">{{ 'ACTIVE' | translate }}</md-option>
+                    <md-option value="Inactive">{{ 'INACTIVE' | translate }}</md-option>
+                  </md-select>
+                  <div ng-messages="form.status.$error">
+                    <div ng-message="required">{{ 'FIELD_REQUIRED' | translate }}</div>
+                  </div>
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-checkbox aria-label="Free Shipping" ng-model="obj.isFreeShippingEnabled">
+                  {{ 'FREE_SHIPPING' | translate }}
+                </md-checkbox>
+              </div>
+
+            </div>
+
+            <div flex>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'MINIMUM_ORDER_AMOUNT' | translate }}</label>
+                  <input type="number" placeholder name="minimumOrderAmount" min="0" ng-model="obj.minimumOrderAmount">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'MAXIMUM_ORDER_AMOUNT' | translate }}</label>
+                  <input type="number" placeholder name="maximumOrderAmount" min="0" ng-model="obj.maximumOrderAmount">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'START_DATE' | translate }}</label>
+                  <input type="text" placeholder name="startDate" mdc-datetime-picker="" date="true" time="true"
+                    short-time="true" show-todays-date="" format="lll" minutes="true" show-icon="false"
+                    lang="{{ lang }}" ng-model="obj.startDate" max-date="obj.endDate"
+                    cancel-text="{{ 'CANCEL' | translate }}" today-text="{{ 'TODAY' | translate }}"
+                    ok-text="{{ 'OK' | translate }}">
+                </md-input-container>
+              </div>
+
+              <div layout="row">
+                <md-input-container class="md-block" flex>
+                  <label>{{ 'END_DATE' | translate }}</label>
+                  <input type="text" placeholder name="endDate" mdc-datetime-picker="" date="true" time="true"
+                    short-time="true" show-todays-date="" format="lll" minutes="true" show-icon="false"
+                    lang="{{ lang }}" ng-model="obj.endDate" min-date="obj.startDate"
+                    cancel-text="{{ 'CANCEL' | translate }}" today-text="{{ 'TODAY' | translate }}"
+                    ok-text="{{ 'OK' | translate }}">
+                </md-input-container>
+              </div>
+
+            </div>
+
+          </div>
+
+        </md-tab>
+
+        <md-tab label="{{ 'COUPON_RESTRICTIONS' | translate }}">
+
+          <div layout="row" layout-xs="column" layout-sm="column" layout-padding>
+
+            <div flex>
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="customers" ng-model="users" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'CUSTOMERS' | translate }}">
+                  <md-autocomplete class="full-width" md-no-cache="true" md-search-text="searchText"
+                    md-items="user in queryUsers(searchText)" md-item-text="user.name"
+                    placeholder="{{ 'CUSTOMERS' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchText">
+                        {{ user.name }}
+                      </span>
+                      <span ng-if="user.authData.facebook">(Facebook)</span>
+                      <span ng-if="user.authData.google">(Google)</span>
+                      <span ng-if="user.authData.apple">(Apple)</span>
+                      <span ng-if="!user.authData">({{ user.username }})</span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                    <span ng-if="$chip.authData.facebook">(Facebook)</span>
+                    <span ng-if="$chip.authData.google">(Google)</span>
+                    <span ng-if="$chip.authData.apple">(Apple)</span>
+                    <span ng-if="!$chip.authData">({{ $chip.username }})</span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="zones" ng-model="zones" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'ZONES' | translate }}">
+                  <md-autocomplete class="full-width" md-no-cache="true" md-search-text="searchZoneText"
+                    md-items="zone in queryZones(searchZoneText)" md-item-text="zone.name"
+                    placeholder="{{ 'ZONES' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchZoneText">
+                        {{ zone.name }}
+                      </span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="subzones" ng-model="subzones" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'SUB_ZONES' | translate }}">
+                  <md-autocomplete class="full-width" md-no-cache="true" md-search-text="searchSubZoneText"
+                    md-items="zone in querySubZones(searchSubZoneText)" md-item-text="zone.name"
+                    placeholder="{{ 'SUB_ZONES' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchSubZoneText">
+                        {{ zone.name }}
+                      </span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="items" ng-model="items" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'ITEMS' | translate }}">
+                  <md-autocomplete class="full-width" md-no-cache="true" md-search-text="searchItemText"
+                    md-items="item in queryItems(searchItemText)" md-item-text="item.name"
+                    placeholder="{{ 'ITEMS' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchItemText">
+                        {{ item.name }}
+                      </span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="categories" ng-model="categories" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'CATEGORIES' | translate }}">
+                  <md-autocomplete class="full-width" md-no-cache="true" md-search-text="searchCategoryText"
+                    md-items="category in queryCategories(searchCategoryText)" md-item-text="category.name"
+                    placeholder="{{ 'CATEGORIES' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchCategoryText">
+                        {{ category.name }}
+                      </span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="subcategories" ng-model="subcategories" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'SUB_CATEGORIES' | translate }}">
+                  <md-autocomplete class="full-width" ng-disabled="!categories.length" md-no-cache="true" md-search-text="searchSubCategoryText"
+                    md-items="category in querySubCategories(searchSubCategoryText)" md-item-text="category.name"
+                    placeholder="{{ 'SUB_CATEGORIES' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchSubCategoryText">
+                        {{ category.name }}
+                      </span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <md-input-container class="md-block" md-no-float flex>
+                <md-chips class="full-width" name="brands" ng-model="brands" md-autocomplete-snap="width"
+                  md-require-match="true" input-aria-label="{{ 'BRANDS' | translate }}">
+                  <md-autocomplete class="full-width" md-no-cache="true" md-search-text="searchBrandText"
+                    md-items="brand in queryBrands(searchBrandText)" md-item-text="brand.name"
+                    placeholder="{{ 'BRANDS' | translate }}">
+                    <md-item-template>
+                      <span md-highlight-text="searchBrandText">
+                        {{ brand.name }}
+                      </span>
+                    </md-item-template>
+                  </md-autocomplete>
+                  <md-chip-template>
+                    <span>
+                      <strong>{{ $chip.name }}</strong>
+                    </span>
+                  </md-chip-template>
+                </md-chips>
+              </md-input-container>
+
+              <p>{{ 'CUSTOMER_RESTRICTIONS' | translate }}</p>
+
+              <div layout="row">
+                <md-radio-group ng-model="obj.customerRestriction">
+                  <md-radio-button ng-value="null" class="md-primary">
+                    {{ 'NO_RESTRICTION' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="'new'" class="md-primary">
+                    {{ 'NEW_CUSTOMERS_ONLY' | translate }}
+                  </md-radio-button>
+                  <md-radio-button ng-value="'existing'" class="md-primary">
+                    {{ 'EXISTING_CUSTOMERS_ONLY' | translate }}
+                  </md-radio-button>
+                </md-radio-group>
+              </div>
+
+              <div layout="row">
+                <md-checkbox aria-label="Account required" ng-model="obj.isAccountRequired">
+                  {{ 'ACCOUNT_REQUIRED' | translate }}
+                </md-checkbox>
+              </div>
+
+            </div>
+
+          </div>
+
+        </md-tab>
+
+        <md-tab label="{{ 'COUPON_LIMITS' | translate }}">
+          <div layout="row" layout-xs="column" layout-sm="column" layout-padding>
+            <div layout="row">
+              <md-input-container class="md-block" flex>
+                <label>{{ 'USAGE_LIMIT' | translate }}</label>
+                <input type="number" placeholder name="usageLimit" min="0" ng-model="obj.usageLimit">
+              </md-input-container>
+            </div>
+
+            <div layout="row">
+              <md-input-container class="md-block" flex>
+                <label>{{ 'USAGE_LIMIT_PER_USER' | translate }}</label>
+                <input type="number" placeholder name="usageLimitPerUser" min="0" ng-model="obj.usageLimitPerUser">
+              </md-input-container>
+            </div>
+          </div>
+        </md-tab>
+
+      </md-tabs>
+
+    </form>
+  </md-dialog-content>
+  <md-dialog-actions layout="row">
+    <span flex></span>
+    <md-button ng-click="onClose()">
+      {{ 'CLOSE' | translate }}
+    </md-button>
+    <md-button class="md-raised md-primary" ng-disabled="!form.$valid || isSaving" ng-click="onSubmit(form.$valid)">
+      {{ !isSaving ? ('SAVE' | translate) : ('SAVING' | translate) }}
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>
