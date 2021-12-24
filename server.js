@@ -58,6 +58,7 @@ app.use(cookieSession({
   maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year
 }))
 
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user
   res.locals.lang = process.env.CUSTOM_LANG
